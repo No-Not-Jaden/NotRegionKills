@@ -28,21 +28,21 @@ public class StatManager {
      */
     public static void loadSavedKills() throws IOException {
         File save = getSaveFile();
-        // check if the file exists/create a new file
-        if (save.createNewFile()) {
-            Bukkit.getLogger().info("[NotRegionKills] Created new save file.");
-            return;
-        }
+
         // create a Gson object
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(StatisticsAdapter.class, new StatisticsAdapter());
         Gson gson = builder.create();
 
+        // read json from stats file & save to map
         Type mapType = new TypeToken<Map<UUID, RegionStat>>(){}.getType();
         JsonReader reader = new JsonReader(new FileReader(save));
         allPlayerStats = gson.fromJson(reader , mapType);
         reader.close();
 
+        // check to see if the file was empty or had a null value in it
+        if (allPlayerStats == null)
+            allPlayerStats = new HashMap<>();
     }
 
     /**
@@ -51,10 +51,7 @@ public class StatManager {
      */
     public static void save() throws IOException {
         File save = getSaveFile();
-        // create new file if it's missing
-        if (save.createNewFile()) {
-            Bukkit.getLogger().info("[NotRegionKills] Created new save file.");
-        }
+
         // create a Gson object
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(StatisticsAdapter.class, new StatisticsAdapter());
@@ -64,7 +61,6 @@ public class StatManager {
         JsonWriter writer = new JsonWriter(new FileWriter(save));
         gson.toJson(allPlayerStats, mapType, writer);
         writer.close();
-
     }
 
     public static boolean isMob(String type) {
@@ -101,8 +97,16 @@ public class StatManager {
      * Get the stats.json file from the data folder
      * @return the stats.json save file
      */
-    private static File getSaveFile(){
-        return new File(NotRegionKills.getInstance().getDataFolder() + File.separator + "stats.json");
+    private static File getSaveFile() throws IOException {
+        File save = new File(NotRegionKills.getInstance().getDataFolder() + File.separator + "stats.json");
+        // check if the file exists/create a new file
+        if (NotRegionKills.getInstance().getDataFolder().mkdir()) {
+            Bukkit.getLogger().info("[NotRegionKills] Created new directory folder.");
+        }
+        if (save.createNewFile()) {
+            Bukkit.getLogger().info("[NotRegionKills] Created new save file.");
+        }
+        return save;
     }
 
     /**
@@ -184,7 +188,8 @@ public class StatManager {
         // get region stats
         RegionStat regionStat = allPlayerStats.get(uuid);
         // iterate through all the regions in regionStat and get the sum of the matching mobTypes
-        return regionStat.getRegionKills().values().stream().filter(playerStat -> playerStat.getEntityKills().containsKey(mobType)).mapToLong(playerStat -> playerStat.getEntityKills().get(mobType)).sum();
+        String finalMobType = mobType;
+        return regionStat.getRegionKills().values().stream().filter(playerStat -> playerStat.getEntityKills().containsKey(finalMobType)).mapToLong(playerStat -> playerStat.getEntityKills().get(finalMobType)).sum();
     }
 
 }
