@@ -11,11 +11,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.IOException;
 
-/**
- * Track living entity kills per player
- * add mythicmobs as a soft depend
- * add a region flag for stat tracking
- */
 public final class NotRegionKills extends JavaPlugin {
     private static NotRegionKills instance;
     public static boolean mythicMobsEnabled = false;

@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerStat {
+    /**
+     * Entity type, number of kills
+     */
     private final Map<String, Long> entityKills;
     public PlayerStat() {
         entityKills = new HashMap<>();
@@ -20,5 +23,12 @@ public class PlayerStat {
             entityKills.replace(entityType, entityKills.get(entityType) + 1);
         else
             entityKills.put(entityType, 1L);
+    }
+
+    @Override
+    public String toString() {
+        return "PlayerStat{" +
+                "entityKills=" + entityKills +
+                '}';
     }
 }

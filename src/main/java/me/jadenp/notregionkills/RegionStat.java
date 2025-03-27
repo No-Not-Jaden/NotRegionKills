@@ -4,25 +4,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RegionStat {
-    private final Map<String, PlayerStat> regionKills;
+    /**
+     * Region Name, Player kill stats
+     */
+    private final Map<RegionType, PlayerStat> regionKills;
     public RegionStat(){
         regionKills = new HashMap<>();
     }
-    public RegionStat(Map<String, PlayerStat> regionKills) {
+    public RegionStat(Map<RegionType, PlayerStat> regionKills) {
         this.regionKills = regionKills;
     }
 
-    public void killEntity(String regionName, String entityType) {
-        if (regionKills.containsKey(regionName)) {
-            regionKills.get(regionName).killEntity(entityType);
+    public void killEntity(RegionType region, String entityType) {
+        if (regionKills.containsKey(region)) {
+            regionKills.get(region).killEntity(entityType);
         } else {
             PlayerStat stat = new PlayerStat();
             stat.killEntity(entityType);
-            regionKills.put(regionName, stat);
+            regionKills.put(region, stat);
         }
     }
 
-    public Map<String, PlayerStat> getRegionKills() {
+    public Map<RegionType, PlayerStat> getRegionKills() {
         return regionKills;
+    }
+
+    @Override
+    public String toString() {
+        return "RegionStat{" +
+                "regionKills=" + regionKills +
+                '}';
     }
 }
